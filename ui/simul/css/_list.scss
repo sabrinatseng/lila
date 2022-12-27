@@ -33,6 +33,17 @@
       padding-bottom: 1em;
     }
 
+    .count {
+      @extend %roboto;
+
+      vertical-align: center;
+      color: $c-brag;
+      font-size: 40px;
+      text-align: center;
+      line-height: 72px;
+      width: 80px;
+    }
+
     .host,
     .players {
       display: none;

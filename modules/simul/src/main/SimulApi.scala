@@ -5,6 +5,8 @@ import chess.variant.Variant
 import play.api.libs.json.Json
 import scala.concurrent.duration.*
 
+import lila.common.config.MaxPerPage
+import lila.common.paginator.Paginator
 import lila.common.{ Bus, Debouncer }
 import lila.db.dsl.{ *, given }
 import lila.game.{ Game, GameRepo, PerfPicker }
@@ -223,6 +225,13 @@ final class SimulApi(
 
   def teamOf(id: SimulId): Fu[Option[TeamId]] =
     repo.coll.primitiveOne[TeamId]($id(id), "team")
+
+  def byHostPager(host: User, page: Int): Fu[Paginator[Simul]] =
+    Paginator(
+      adapter = repo.byHostAdapter(host),
+      currentPage = page,
+      maxPerPage = MaxPerPage(20)
+    )
 
   private def makeGame(simul: Simul, host: User)(
       pairingAndNumber: (SimulPairing, Int)

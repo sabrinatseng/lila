@@ -4,6 +4,7 @@ import chess.{ Clock, Status }
 import chess.variant.Variant
 import org.joda.time.DateTime
 import reactivemongo.api.bson.*
+import reactivemongo.api.ReadPreference
 
 import lila.db.BSON
 import lila.db.dsl.{ *, given }
@@ -156,4 +157,13 @@ final private[simul] class SimulRepo(val coll: Coll)(using ec: scala.concurrent.
       createdSelect ++ $doc(
         "createdAt" -> $doc("$lt" -> (DateTime.now minusMinutes 60))
       )
+    )
+
+  private[simul] def byHostAdapter(host: User) =
+    new lila.db.paginator.Adapter[Simul](
+      collection = coll,
+      selector = $doc("hostId" -> host.id),
+      projection = none,
+      sort = $sort desc "createdAt",
+      readPreference = ReadPreference.secondaryPreferred
     )
